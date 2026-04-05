@@ -18,7 +18,7 @@ export const registerReadWebpageContentTool = (server: McpServer) => {
                 const page = await ensureBrowser();
                 const response = await page.goto(url, { waitUntil: "domcontentloaded" });
 
-                if (!response?.ok) {
+                if (!response?.ok()) {
                     return {
                         content: [{
                             type: "text",

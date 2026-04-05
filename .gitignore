@@ -13,5 +13,6 @@ node_modules/
 # Build outputs
 dist/
 
-# Puppeteer user data (contains sensitive browser data)
+# Browser user data (contains sensitive browser data)
+browser-user-data/
 puppeteer-user-data/

@@ -1,6 +1,6 @@
 # Shufersal MCP Server
 
-A Model Context Protocol server that provides automated shopping capabilities for the Shufersal website using Puppeteer. This server enables LLMs to interact with Shufersal's online shopping platform, search for products, create shopping lists, and add items to your cart.
+A Model Context Protocol server that provides automated shopping capabilities for the Shufersal website using Playwright. This server enables LLMs to interact with Shufersal's online shopping platform, search for products, create shopping lists, and add items to your cart.
 
 ## Key Features
 
@@ -102,7 +102,7 @@ Windows:
 
 **IMPORTANT**: This tool automates browser interactions with the Shufersal website and stores browser data locally. Please be aware:
 
-- Browser session data is stored in `./puppeteer-user-data/` (excluded from git)
+- Browser session data is stored in `./browser-user-data/` (excluded from git)
 - If you log into Shufersal during first use, the tool will save your session data in the user data directory
 - Only use this tool with trusted MCP clients
 
@@ -111,8 +111,18 @@ Windows:
 ### Building
 
 ```bash
+npm install
+npx playwright install chromium
 npm run build
 ```
+
+### Testing with MCP Inspector
+
+```bash
+npx @modelcontextprotocol/inspector node dist/index.js
+```
+
+This opens a web UI where you can invoke each tool interactively and see responses.
 
 ### Development Mode
 
