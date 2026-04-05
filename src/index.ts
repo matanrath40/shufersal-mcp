@@ -4,7 +4,6 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
 	registerReadWebpageContentTool,
-	registerCreateShoppingListTableTool,
 	registerOpenShufersalTool,
 	registerSearchShufersalTool,
 	registerAddToShufersalCartTool
@@ -29,7 +28,6 @@ const server = new McpServer(
 
 // Register all tools
 registerReadWebpageContentTool(server);
-registerCreateShoppingListTableTool(server);
 registerOpenShufersalTool(server);
 registerSearchShufersalTool(server);
 registerAddToShufersalCartTool(server);

@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { ensureBrowser } from "../browser.js";
 import { CONFIG } from "../config.js";
@@ -8,22 +7,10 @@ export const registerOpenShufersalTool = (server: McpServer) => {
 		"open_shufersal",
 		{
 			description: "Open the Shufersal website and prepare for shopping.",
-			inputSchema: {
-				hasCreatedShoppingList: z.boolean().describe("Whether a shopping list has been created beforehand")
-			}
+			inputSchema: {}
 		},
-		async ({ hasCreatedShoppingList }: { hasCreatedShoppingList: boolean }) => {
+		async () => {
 			try {
-				if (!hasCreatedShoppingList) {
-					return {
-						content: [{
-							type: "text",
-							text: "Please create a shopping list before opening the Shufersal website",
-						}],
-						isError: true,
-					};
-				}
-
 				const page = await ensureBrowser();
 				await page.goto(CONFIG.SHUFERSAL_BASE_URL);
 
