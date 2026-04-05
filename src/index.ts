@@ -6,7 +6,10 @@ import {
 	registerReadWebpageContentTool,
 	registerOpenShufersalTool,
 	registerSearchShufersalTool,
-	registerAddToShufersalCartTool
+	registerAddToShufersalCartTool,
+	registerCheckLoginStatusTool,
+	registerViewCartTool,
+	registerRemoveFromCartTool,
 } from "./tools/index.js";
 import { browserState } from "./browser.js";
 
@@ -31,6 +34,9 @@ registerReadWebpageContentTool(server);
 registerOpenShufersalTool(server);
 registerSearchShufersalTool(server);
 registerAddToShufersalCartTool(server);
+registerCheckLoginStatusTool(server);
+registerViewCartTool(server);
+registerRemoveFromCartTool(server);
 
 // Let the client read the console logs
 server.resource(

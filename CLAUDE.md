@@ -51,3 +51,11 @@ When creating new tools that make fetch requests to Shufersal's API from inside 
 3. **Use relative URLs without a leading slash** — `"cart/add"` not `"/cart/add"`. The page is at `shufersal.co.il/online/he/`, so a leading slash resolves from the domain root and skips `/online/he/`.
 
 4. **Check for redirects in the response** — `response.ok && !response.redirected` is the correct success check. A 200 with `redirected: true` means the request was rejected.
+
+## Plans
+
+All implementation plans must be saved as `.md` files under `.claude/plans/` in this repository.
+
+## Commits
+
+Commits should be authored by the user only. Do not add `Co-Authored-By` lines.
