@@ -19,29 +19,42 @@ export const registerAddToShufersalCartTool = (server: McpServer) => {
                 await ensureBrowser();
 
                 const addToCartFunction = async (runArgs: { product_id: string, sellingMethod: string, qty: number, comment?: string }) => {
-                    const response = await window.ajaxCall("/cart/add", JSON.stringify({
-                        productCodePost: runArgs.product_id,
-                        productCode: runArgs.product_id,
-                        sellingMethod: runArgs.sellingMethod,
-                        qty: runArgs.qty,
-                        frontQuantity: runArgs.qty,
-                        comment: runArgs.comment || "",
-                        affiliateCode: ""
-                    }), () => { }, null, {
-                        openFrom: "SEARCH",
-                        recommendationType: "AUTOCOMPLETE_LIST"
+                    const url = "/cart/add?openFrom=SEARCH&recommendationType=AUTOCOMPLETE_LIST";
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-requested-with": "XMLHttpRequest",
+                        },
+                        credentials: "include",
+                        body: JSON.stringify({
+                            productCodePost: runArgs.product_id,
+                            productCode: runArgs.product_id,
+                            sellingMethod: runArgs.sellingMethod,
+                            qty: runArgs.qty,
+                            frontQuantity: runArgs.qty,
+                            comment: runArgs.comment || "",
+                            affiliateCode: "",
+                        }),
                     });
 
-                    return response;
+                    return {
+                        ok: response.ok,
+                        status: response.status,
+                        body: await response.text(),
+                    };
                 };
 
                 const result = await executeScript(addToCartFunction, [{ product_id, sellingMethod, qty, comment }]);
-                const success = typeof result.result === "string" && (result.result as string).startsWith("<div class");
+                const response = result.result as { ok: boolean; status: number; body: string };
+                const success = response.ok;
 
                 return {
                     content: [{
                         type: "text",
-                        text: `Product ${success ? "successfully added to" : "failed to add to"} cart\nConsole output:\n${result.logs.join("\n")}`,
+                        text: success
+                            ? `Product successfully added to cart (status: ${response.status})`
+                            : `Failed to add product to cart (status: ${response.status})\nResponse: ${response.body.substring(0, 500)}`,
                     }],
                     isError: !success,
                 };

@@ -1,15 +1,3 @@
-declare global {
-    interface Window {
-        ajaxCall: (
-            url: string,
-            data: string,
-            success: () => void,
-            error: null,
-            searchParams: Record<string, string>
-        ) => Promise<Response>;
-    }
-}
-
 export interface Product {
     name: string;
     code: string;
