@@ -1,7 +1,7 @@
 import { z } from "zod";
 import TurndownService from "turndown";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { ensureBrowser } from "../browser.js";
+import { ensureBrowser, browserState } from "../browser.js";
 
 export const registerReadWebpageContentTool = (server: McpServer) => {
     server.registerTool(
@@ -14,9 +14,10 @@ export const registerReadWebpageContentTool = (server: McpServer) => {
             }
         },
         async ({ url }: { url: string }) => {
+            await ensureBrowser();
+            const tempPage = await browserState.context!.newPage();
             try {
-                const page = await ensureBrowser();
-                const response = await page.goto(url, { waitUntil: "domcontentloaded" });
+                const response = await tempPage.goto(url, { waitUntil: "domcontentloaded" });
 
                 if (!response?.ok()) {
                     return {
@@ -28,7 +29,7 @@ export const registerReadWebpageContentTool = (server: McpServer) => {
                     };
                 }
 
-                const html = await page.content();
+                const html = await tempPage.content();
                 const turndownService = new TurndownService();
                 const content = turndownService
                     .remove("script")
@@ -50,6 +51,8 @@ export const registerReadWebpageContentTool = (server: McpServer) => {
                     }],
                     isError: true,
                 };
+            } finally {
+                await tempPage.close();
             }
         }
     );
