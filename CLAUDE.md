@@ -28,7 +28,26 @@ No test suite exists. The server runs via `node dist/index.js` over stdio (MCP t
 ### Key patterns
 
 - Tools execute Shufersal API calls **inside the browser context** via `executeScript()` (not from Node), so they inherit the user's authenticated session cookies.
-- `window.ajaxCall` is Shufersal's global AJAX helper, used by `add_to_shufersal_cart` to post to `/cart/add`.
 - The browser launches **headed** (not headless) because the user must log in manually on first use.
 - ESM throughout (`"type": "module"` in package.json, `.js` extensions in imports).
 - Double quotes enforced by ESLint.
+
+### Writing tools that make requests to Shufersal
+
+When creating new tools that make fetch requests to Shufersal's API from inside the browser context, follow these rules:
+
+1. **Verify the page is on Shufersal first** — check `page.url().includes("shufersal")` before running `executeScript()`. If not on Shufersal, return an error telling the user to call `open_shufersal`. Without this, `credentials: "include"` won't attach cookies (same-origin policy).
+
+2. **Include the CSRF token** — Shufersal requires a CSRF token for all state-changing requests (POST/PUT/DELETE). Read it from the page's meta tags inside `page.evaluate()`:
+   ```js
+   const csrfMeta = document.querySelector("meta[name='_csrf']");
+   const csrfHeaderMeta = document.querySelector("meta[name='_csrf_header']");
+   const csrfToken = csrfMeta?.content ?? "";
+   const csrfHeader = csrfHeaderMeta?.content ?? "CSRFToken";
+   // Then add to fetch headers: { [csrfHeader]: csrfToken }
+   ```
+   Without this header, Shufersal silently redirects to the homepage with HTTP 200 — it does NOT return a 403.
+
+3. **Use relative URLs without a leading slash** — `"cart/add"` not `"/cart/add"`. The page is at `shufersal.co.il/online/he/`, so a leading slash resolves from the domain root and skips `/online/he/`.
+
+4. **Check for redirects in the response** — `response.ok && !response.redirected` is the correct success check. A 200 with `redirected: true` means the request was rejected.

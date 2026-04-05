@@ -16,15 +16,31 @@ export const registerAddToShufersalCartTool = (server: McpServer) => {
         },
         async ({ product_id, sellingMethod, qty, comment }: { product_id: string, sellingMethod: string, qty: number, comment?: string }) => {
             try {
-                await ensureBrowser();
+                const page = await ensureBrowser();
+                const currentUrl = page.url();
+
+                if (!currentUrl.includes("shufersal")) {
+                    return {
+                        content: [{
+                            type: "text" as const,
+                            text: "Please open the Shufersal website first using the 'open_shufersal' tool",
+                        }],
+                        isError: true,
+                    };
+                }
 
                 const addToCartFunction = async (runArgs: { product_id: string, sellingMethod: string, qty: number, comment?: string }) => {
-                    const url = "/cart/add?openFrom=SEARCH&recommendationType=AUTOCOMPLETE_LIST";
-                    const response = await fetch(url, {
+                    const csrfMeta = document.querySelector("meta[name='_csrf']") as HTMLMetaElement | null;
+                    const csrfHeaderMeta = document.querySelector("meta[name='_csrf_header']") as HTMLMetaElement | null;
+                    const csrfToken = csrfMeta?.content ?? "";
+                    const csrfHeader = csrfHeaderMeta?.content ?? "CSRFToken";
+
+                    const response = await fetch("cart/add?openFrom=SEARCH&recommendationType=AUTOCOMPLETE_LIST", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
                             "x-requested-with": "XMLHttpRequest",
+                            [csrfHeader]: csrfToken,
                         },
                         credentials: "include",
                         body: JSON.stringify({
@@ -41,20 +57,25 @@ export const registerAddToShufersalCartTool = (server: McpServer) => {
                     return {
                         ok: response.ok,
                         status: response.status,
+                        redirected: response.redirected,
                         body: await response.text(),
                     };
                 };
 
                 const result = await executeScript(addToCartFunction, [{ product_id, sellingMethod, qty, comment }]);
-                const response = result.result as { ok: boolean; status: number; body: string };
-                const success = response.ok;
+                const response = result.result as { ok: boolean; status: number; redirected: boolean; body: string };
+                const success = response.ok && !response.redirected;
+
+                if (success) {
+                    await page.reload({ waitUntil: "domcontentloaded" });
+                }
 
                 return {
                     content: [{
                         type: "text",
                         text: success
                             ? `Product successfully added to cart (status: ${response.status})`
-                            : `Failed to add product to cart (status: ${response.status})\nResponse: ${response.body.substring(0, 500)}`,
+                            : `Failed to add product to cart (status: ${response.status}, redirected: ${response.redirected})\nResponse: ${response.body.substring(0, 500)}`,
                     }],
                     isError: !success,
                 };
