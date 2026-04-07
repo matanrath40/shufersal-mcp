@@ -22,6 +22,17 @@ export interface SearchResultItem {
     unitDescription: string;
     brandName: string;
     secondLevelCategory: string;
+    promotionMsg: string | null;
+    promotionCodes: string[];
+    mainPromotionCode: string | null;
+}
+
+export interface PromoPageItem {
+    promoId: string;
+    productCode: string;
+    description: string;
+    quantityCondition: string;
+    priceText: string;
 }
 
 export interface SearchApiResponse {

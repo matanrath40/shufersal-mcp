@@ -10,6 +10,8 @@ import {
 	registerCheckLoginStatusTool,
 	registerViewCartTool,
 	registerRemoveFromCartTool,
+	registerFindPromotionsTool,
+	registerSuggestCartImprovementsTool,
 } from "./tools/index.js";
 import { browserState } from "./browser.js";
 
@@ -37,6 +39,8 @@ registerAddToShufersalCartTool(server);
 registerCheckLoginStatusTool(server);
 registerViewCartTool(server);
 registerRemoveFromCartTool(server);
+registerFindPromotionsTool(server);
+registerSuggestCartImprovementsTool(server);
 
 // Let the client read the console logs
 server.resource(

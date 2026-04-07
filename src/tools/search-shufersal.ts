@@ -73,6 +73,9 @@ export const registerSearchShufersalTool = (server: McpServer) => {
 					unitDescription: item.unitDescription,
 					brandName: item.brandName,
 					secondLevelCategory: item.secondLevelCategory,
+					promotionMsg: item.promotionMsg ?? null,
+					promotionCodes: item.promotionCodes ?? [],
+					mainPromotionCode: item.mainPromotionCode ?? null,
 				}));
 
 				return {

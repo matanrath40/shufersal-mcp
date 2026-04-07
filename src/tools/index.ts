@@ -5,3 +5,5 @@ export { registerAddToShufersalCartTool } from "./add-to-shufersal-cart.js";
 export { registerCheckLoginStatusTool } from "./check-login-status.js";
 export { registerViewCartTool } from "./view-cart.js";
 export { registerRemoveFromCartTool } from "./remove-from-cart.js";
+export { registerFindPromotionsTool } from "./find-promotions.js";
+export { registerSuggestCartImprovementsTool } from "./suggest-cart-improvements.js";
